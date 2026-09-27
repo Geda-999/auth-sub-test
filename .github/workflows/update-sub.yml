@@ -55,7 +55,25 @@ jobs:
       # 3. 获取远程内容
       # ==========================================
       - name: Fetch sub.txt
+        # 设置环境变量，从 GitHub Secrets 中读取敏感信息
+        # GitHub Secrets 是加密存储的配置，不会在日志中暴露
+        env:
+          # Telegram Bot Token：用于发送通知消息的机器人令牌
+          # 需要在 GitHub 仓库设置中配置 secrets.LINK
+          LINK: ${{ secrets.LINK }}
+
         run: node src/index.js
+
+
+      # 新增：更新 README 时间戳并清理旧日志
+      - name: Update README Timestamp
+        run: |
+          # 设置时区为东八区（北京时间）
+          export TZ='Asia/Shanghai'
+          CURRENT_TIME=$(date "+%Y-%m-%d %H:%M:%S")
+
+          sed -i '/更新于/d' README.md
+          echo -e "更新于 $CURRENT_TIME" >> README.md
 
 
       # ==========================================
