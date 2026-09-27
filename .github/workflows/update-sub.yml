@@ -17,7 +17,10 @@ on:
     # 忽略脚本自己生成的文件
     # 防止 Actions 自己 push 后再次触发
     paths-ignore:
-      - 'data/sub.txt'
+      #- 'data/sub.txt'
+      - 'data/**'
+      - 'README.md'
+
 
 
 # 允许 GitHub Actions 修改仓库内容
