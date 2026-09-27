@@ -1,0 +1,92 @@
+name: Update sub.txt
+
+on:
+
+  # 每小时执行一次
+  schedule:
+    - cron: '0 * * * *'
+
+  # 支持手动执行
+  workflow_dispatch:
+
+  # 用户 push 到 main 时执行
+  push:
+    branches:
+      - main
+
+    # 忽略脚本自己生成的文件
+    # 防止 Actions 自己 push 后再次触发
+    paths-ignore:
+      - 'data/sub.txt'
+
+
+# 允许 GitHub Actions 修改仓库内容
+permissions:
+  contents: write
+
+
+jobs:
+
+  update-sub:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      # ==========================================
+      # 1. 获取代码
+      # ==========================================
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+
+
+      # ==========================================
+      # 2. 设置 Node.js
+      # ==========================================
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+
+      # ==========================================
+      # 3. 获取远程内容
+      # ==========================================
+      - name: Fetch sub.txt
+        run: node src/index.js
+
+
+      # ==========================================
+      # 4. 提交并 Push
+      # ==========================================
+      - name: Commit & Push
+        run: |
+
+          # 设置 Git 提交信息
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # 只添加 sub.txt
+          git add data/sub.txt
+
+          # ========================================
+          # 检查 sub.txt 是否发生变化
+          # ========================================
+          if git diff --cached --quiet; then
+
+            echo "sub.txt 没有变化"
+            echo "不需要提交"
+
+          else
+
+            echo "检测到 sub.txt 发生变化"
+
+            # 提交
+            git commit -m "chore: update sub.txt"
+
+            # 推送到 GitHub
+            git push
+
+          fi

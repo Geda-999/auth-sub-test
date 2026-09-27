@@ -1,0 +1,12 @@
+{
+  "name": "auth-sub-test",
+  "version": "1.0.0",
+  "description": "Fetch remote text and update sub.txt",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
